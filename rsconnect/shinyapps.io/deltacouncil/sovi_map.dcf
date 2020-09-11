@@ -1,0 +1,12 @@
+name: sovi_map
+title: sovi_map
+username:
+account: deltacouncil
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2717245
+bundleId: 3591302
+url: https://deltacouncil.shinyapps.io/sovi_map/
+when: 1599186348.83374
+asMultiple: FALSE
+asStatic: FALSE
