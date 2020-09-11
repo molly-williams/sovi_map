@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+    <idinfo>
+        <citation>
+            <citeinfo>
+                <title>BIOSMap</title>
+            </citeinfo>
+        </citation>
+        <descript>
+            <abstract>Vegetation delineations based on photo interpretation and formal vegetation classification plus change detection.</abstract>
+            <purpose>This is part of an ongoing monitoring project that the Biogeographic Data Branch (BDB) of the California Department of Fish and Wildlife (CDFW), in collaboration with the Department of Water Resources (DWR) and the CDFW Bay Delta Region (BDR), started in 1999 to track changes in the Suisun Marsh vegetation over time. This is the sixth update using the current mapping standards since the original map was made in 1999. Previous vegetation maps can be viewed and downloaded using the online CDFW Biogeographic Information and Observation System (BIOS) and the links to the associated reports included in the metadata.   The reports can also be downloaded from the CDFW website ( http://www.dfg.ca.gov/biogeodata/vegcamp/veg_classification_reports_maps.asp ).
+
+The report associated with this map is available for download at: http://nrm.dfg.ca.gov/FileHandler.ashx?DocumentID=149178
+</purpose>
+        </descript>
+        <keywords>
+            <theme>
+                <themekt>None</themekt>
+                <themekey>Auth_CDFW</themekey>
+                <themekey>California Department of Fish And Wildlife</themekey>
+                <themekey>California Natural Resources Agency</themekey>
+                <themekey>CAOpenData</themekey>
+                <themekey>San Francisco Bay Delta</themekey>
+                <themekey>Suisun Marsh</themekey>
+                <themekey>Solano County</themekey>
+                <themekey>tidal</themekey>
+                <themekey>biota</themekey>
+                <themekey>marsh</themekey>
+                <themekey>vegetation</themekey>
+                <themekey>wetland</themekey>
+                <themekey>land cover</themekey>
+                <themekey>environment</themekey>
+                <themekey>plant</themekey>
+                <themekey>DS2676_20170920_wm</themekey>
+            </theme>
+        </keywords>
+        <accconst>None</accconst>
+        <useconst/>
+        <datacred>Rachelle Boul; California Department of Fish and Wildlife (CDFW); Biogeographic Data Branch; (916) 324-9718; ; Rachelle.Boul@wildlife.ca.gov; </datacred>
+    </idinfo>
+    <metainfo>
+        <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+        <metstdv>FGDC-STD-001-1998</metstdv>
+        <mettc>local time</mettc>
+    </metainfo>
+</metadata>
