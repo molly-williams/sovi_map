@@ -9,11 +9,11 @@ library(tidyverse)
 library(rgeos)
 
 # Data import and wrangling
-sovi <- readOGR("data/SOVI_cities.shp")
+sovi <- readOGR("data/SOVI_cities_zips.shp")
 sovi@data <- sovi@data %>% 
   dplyr::select(GEO, "Census Block Group ID"=GEOID2, UNDER5, UNDER5_70, NONWHI, NONWHI_70, S65ALONE, S65ALONE_7, LESSGED, LESSGED_70, DSABLTY, DSABLTY_70, 
          RENTERS, RENTER_70, NOCAR, NOCAR_70, LINGISO, LINGISO_70, POV200, POV200_70, ASTHMA, ASTHMA_70, LBW, LBW_70, 
-         CARDIO, CARDIO_70, HLTHINS, HLTHINS_70, FOODACCESS, TOTAL_SCOR, PCT_MHHI, CES_SCORE, CES_PCTL, VULNBLTY, NAME, County, est_pop, MHHI=HD01_VD01)
+         CARDIO, CARDIO_70, HLTHINS, HLTHINS_70, FOODACCESS, TOTAL_SCOR, PCT_MHHI, CES_SCORE, CES_PCTL, VULNBLTY, NAME, County, est_pop, MHHI=HD01_VD01, ZCTA5CE10)
 
 sovi@data$GEO <- as.numeric(sovi@data$GEO)
 sovi@data$FOODACCESS <- as.numeric(as.character(sovi@data$FOODACCESS))
@@ -30,20 +30,20 @@ sovi@data <- sovi@data %>%
   mutate(Vulnerability = ifelse(VULNBLTY == "Moderate", 1, 
                            ifelse(VULNBLTY == "High", 2,
                                   ifelse(VULNBLTY == "Highest", 3, NA)))) %>% 
-  mutate("% pop <5" = UNDER5*100) %>% 
-  mutate("% nonwhite households" = NONWHI*100) %>% 
-  mutate("% single households >64" = S65ALONE*100) %>% 
-  mutate("% without GED/diploma" = LESSGED*100) %>% 
-  mutate("% disabled households" = DSABLTY*100) %>% 
-  mutate("% rentals" = RENTERS*100) %>% 
-  mutate("% no-car households" = NOCAR) %>% 
-  mutate("% limited English households" = LINGISO*100) %>% 
-  mutate("% of households in poverty" = POV200*100) %>% 
-  mutate("% low birth weight" = LBW) %>%  # already a percentage 
+  mutate("% popn. under age 5" = UNDER5*100) %>% 
+  mutate("% of households with >0 non-white people" = NONWHI*100) %>% 
+  mutate("% single-person households > age 64" = S65ALONE*100) %>% 
+  mutate("% of adults 25+ without GED/diploma" = LESSGED*100) %>% 
+  mutate("% of households that include someone with a disability" = DSABLTY*100) %>% 
+  mutate("% of rented housing units" = RENTERS*100) %>% 
+  mutate("% of households with no vehicle access" = NOCAR*100) %>% 
+  mutate("% of households with limited English proficiency" = LINGISO*100) %>% 
+  mutate("% of households with income <200% of the federal poverty line" = POV200*100) %>% 
+  mutate("% of babies born at low birth weight" = LBW) %>%  # already a percentage 
   mutate("Asthma ER visits per 10k" = ASTHMA) %>% #rate  - convert to %?
   mutate("Heart-attack ER visits per 10k" = CARDIO) %>% #rate - convert to %?
   mutate("% uninsured households" = HLTHINS*100) %>% 
-  mutate("Food desert" = FOODACCESS) %>%
+  mutate("Region of low food access" = FOODACCESS) %>%
   mutate(PCT_MHHI = PCT_MHHI*100) %>% 
   mutate("Under 5 popn. >70th percentile?" = ifelse(UNDER5_70 == 1, "Yes", "No")) %>% 
   mutate("Nonwhite households >70th percentile?" = ifelse(NONWHI_70 == 1, "Yes", "No")) %>% 
@@ -69,6 +69,15 @@ delta_sm <- readOGR(dsn="data", layer="LD_SM_Merged", verbose = FALSE)
 ## Reproject to lat long
 delta_sm <- spTransform(delta_sm, CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) #used crs(sovi)
 
+# Delta/SM county boundaries shapefile
+delta_counties <- readOGR(dsn="data", layer="LDSMcounties", verbose=FALSE)
+delta_counties@data$NAME_UCASE <- as.character(delta_counties@data$NAME_UCASE)
+
+
+## Reproject to lat long
+delta_counties <- spTransform(delta_counties, CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) #used crs(sovi)
+
+
 # HU Watershed boundary shapefile 
 watersheds <- readOGR(dsn="data", layer="CA_HU12_clip", verbose = FALSE)
 watersheds@data$Name <- as.character(watersheds@data$Name)
@@ -83,22 +92,16 @@ watersheds <- spTransform(watersheds, CRS("+proj=longlat +datum=NAD83 +no_defs +
 #sm_veg <- spTransform(sm_veg, CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) #used crs(sovi)
 
 # Delta VegCAMP shapefile
-delta_veg <- readOGR(dsn="data", layer="delta_veg", verbose = FALSE)
+#delta_veg <- readOGR(dsn="data", layer="delta_veg", verbose = FALSE)
+#delta_veg@data <- delta_veg@data %>% 
+#  dplyr::select(OBJECTID, "Vegetation Type"=CWHRTYPE)
 
+# Reproject to lat/long
 #delta_veg <- spTransform(delta_veg, CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")) #used crs(sovi)
 
 
-#########################
-# Palette for vegetation
-#w_palette <- colorNumeric(palette="viridis", domain=watersheds@data$Name,, na.color="transparent")
-
-#w_pal <- colorNumeric(
-#  palette = "Blues",
-#  domain = watersheds@data$Name)
-
-#binpal <- colorBin("Blues", watersheds@data$Name, 67, pretty = TRUE)
-
-######################
+# Palette for vegetation layer
+#v_pal <- colorNumeric(palette="magma", 11, na.color="transparent")
 
 
 # Text for popup 
@@ -133,27 +136,265 @@ output$map <- renderLeaflet({
     addMarkers(data = points(), group="Location Pin") 
 })
 
+
+# Responsive description text and data citations
+observe({
+  textBy <- input$color
+  if (textBy == "Vulnerability") {
+    output$selected_var <- renderUI({
+      tags$div(
+       "Overall vulnerability rating for census blocks based on summed indicators >70th percentile.",
+               tags$br(),
+               tags$br(),
+               "A score of 11 reflects the highest level of social vulnerability, meaning a block group has characteristics
+               in the 70th percentile for 11 out of 14 total indicators. 'Highest' vulnerability indicates scores of 8-11,
+               'High' indicates scores of 4-7, and 'Moderate' indicates scores of 0-3. See methodology tab for more details."
+      )
+    })
+  }
+  
+  else if (textBy == "Select Indicator") {
+    output$selected_var <- renderUI({
+      tags$div(
+        " ")
+    })
+  } 
+  
+  else if (textBy == "% popn. under age 5") {
+    output$selected_var <- renderUI({
+      tags$div(
+      "Young children are more vulnerable to flooding, extreme heat, and wildfire because they depend 
+            on others to take protective actions such as evacuation. They are also more sensitive 
+            to heat and air quality impacts because their lungs are still developing.",
+      tags$a("(US Global Change Research Program, 2016)", href="https://health2016.globalchange.gov/extreme-events", target="_blank"),
+      tags$br(),
+      tags$br(),
+      "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B01001&tid=ACSDT5Y2017.B01001&hidePreview=false", target="_blank")
+      )
+    })
+  }   
+  
+  else if (textBy == "% of households with >0 non-white people") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "People of color have higher baseline rates of chronic medical conditions 
+        that increase their sensitivity to environmental impacts. It is important 
+        to note that these population health disparities are the result of long-term, 
+        cumulative, social and economic factors - not intrinsic differences based on race",
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        "Further, individual households' ability to access resources to recover from natural disasters varies based on race",
+        tags$a("(Elliott et al., 2020).", href="https://journals.sagepub.com/doi/full/10.1177/2378023120905439", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B03002&tid=ACSDT5Y2017.B03002&hidePreview=false", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "% single-person households > age 64") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Older adults are more likely to have exisiting, chronic medical conditions which make them
+        more vulnerable to environmental hazards. They are more sensitive to extreme heat events", 
+        tags$a("(Knowlton et al. 2009)", href="https://pubmed.ncbi.nlm.nih.gov/19165388/", target="_blank"),
+        "and wildfire smoke",
+        tags$a("(Stone et al. 2019).", href="https://ww3.arb.ca.gov/smp/progdev/pubeduc/wfgv8.pdf", target="_blank"),
+        "Further, older adults living alone are less likely to be able to evacuate on their own.",
+        tags$a("(US Global Change Research Program, 2016)", href="https://health2016.globalchange.gov/extreme-events", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B11007&tid=ACSDT5Y2017.B11007&hidePreview=false", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "% of adults 25+ without GED/diploma") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Low educational attainment is a driver of increased vulnerability 
+        and decreased resilience to climate change",
+        tags$a("(Raval et al. 2019).", href="https://apen4ej.org/wp-content/uploads/2019/10/APEN-Mapping_Resilience-Report.pdf", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B15003&tid=ACSDT5Y2017.B15003&hidePreview=false", target="_blank"))
+    })
+  }
+  
+  else if (textBy == "% of households that include someone with a disability") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "People with disabilities are less likely to be able to evacuate on their own, and are therefore more vulnerable
+        to impacts from climate change",
+        tags$a("(US Global Change Research Program, 2016).", href="https://health2016.globalchange.gov/extreme-events", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B22010&tid=ACSDT5Y2017.B22010&hidePreview=false", target="_blank"))
+    })
+  }
+  
+  else if (textBy == "% of rented housing units") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Renters have fewer resources to repair damage or procure temporary and replacement housing
+        in the event of a natural disaster",
+        tags$a("(Cutter et al. 2003),", href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1540-6237.8402002", target="_blank"),
+        "and face increased exposure and reduced adaptive capacity to hazards like wildfire smoke",
+        tags$a("(Stone et al. 2019).", href="https://ww3.arb.ca.gov/smp/progdev/pubeduc/wfgv8.pdf", target="_blank"),
+        "In the case of extreme heat events, renters without air conditioning may not have the option of installing it,
+        or may not be able to afford higher energy costs associated with using AC during peak demand",
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B25003&tid=ACSDT5Y2017.B25003&hidePreview=false", target="_blank"))
+    })
+  }
+  
+  else if (textBy == "% of households with no vehicle access") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Households without access to a vehicle are less able to evacuate and are therefore more vulnerable.",
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B25044&tid=ACSDT1Y2018.B25044&hidePreview=false", target="_blank"))
+    })
+  }
+  
+  
+  else if (textBy == "% of households with limited English proficiency") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Linguistically isolated households are more vulnerable to climate change impacts, such as flooding and extreme 
+        heat events, because they have more limited access to or understanding 
+        of emergency alerts, health warnings, and safety information than the general population",
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=C16002&tid=ACSDT5Y2017.C16002&hidePreview=false", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "% of households with income <200% of the federal poverty line") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Low-income communities face a host of disadvantages that are compounded by climate change impacts,
+        such as higher baseline rates of chronic medical conditions that increase their sensitivity to environmental hazards
+        and fewer resources with which to recover from natural disasers",
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=C17002&tid=ACSDT5Y2017.C17002&hidePreview=false", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "% of babies born at low birth weight") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Low birth weights are indicative of increased stressed levels in pregnant people, and are often an impact 
+        of hazards such as flooding, extreme heat, and wildfire smoke. It is also a useful proxy for overall
+        community health and as a predictor of future health conditions",
+        tags$a("(US Global Change Research Program, 2016).", href="https://health2016.globalchange.gov/extreme-events", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("CalEnviroScreen 3.0", href="https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-30", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "Asthma ER visits per 10k") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Individuals suffering from asthma are more sensitive to air pollution caused by climate change 
+        hazards such as extreme heat and wildfire smoke",
+        tags$a("(Stone et al. 2019),", href="https://ww3.arb.ca.gov/smp/progdev/pubeduc/wfgv8.pdf", target="_blank"),
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("CalEnviroScreen 3.0", href="https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-30", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "Heart-attack ER visits per 10k") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Individuals suffering from cardiovascular disease are more sensitive to air pollution caused by climate change 
+        hazards such as extreme heat and wildfire smoke",
+        tags$a("(Stone et al. 2019),", href="https://ww3.arb.ca.gov/smp/progdev/pubeduc/wfgv8.pdf", target="_blank"),
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("CalEnviroScreen 3.0", href="https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-30", target="_blank")
+        )
+    })
+  }
+  
+  else if (textBy == "% uninsured households") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "Individuals that lack health insurance may face more difficulty 
+        accessing care for conditions caused or exacerbated by climate change impacts,
+        such as extreme heat, exposure to floodwaters, or wildfire smoke",
+        tags$a("(CA Office of Planning and Research, 2017).", href="https://www.opr.ca.gov/planning/icarp/resilient-ca.html", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("US Census Bureau", href="https://data.census.gov/cedsci/table?q=B27001&tid=ACSDT1Y2018.B27001&hidePreview=false", target="_blank")
+        )
+    })
+  }
+  
+  else { #(textBy == "Region of low food access") {
+    output$selected_var <- renderUI({
+      tags$div(
+        "A 'food desert' is defined as a region where at least 100 households are more than a half mile
+        from the nearest supermarket and have no access to a vehicle, or where at least 500 people or 33% 
+        of the population live more than 20 miles from the nearest supermarket. Food deserts are just one 
+        measure of food insecurity, which has been identified as a significant contributor to
+        health outcomes.",
+        tags$a("(CA Healthy Places Index)", href="https://healthyplacesindex.org/data-reports/", target="_blank"),
+        tags$br(),
+        tags$br(),
+        "Data Source: ", tags$a("USDA Food Access Research Atlas", href="https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data.aspx", target="_blank")
+        )
+    })
+  }
+  
+})
+
+
+
+
 # Draw interactive polygons
 observe({
   colorBy <- input$color
 
-  if (colorBy == "Food desert") {
+  if (colorBy == "Region of low food access") {
   # Color and palette are treated specially in the "food access" case, because the values are categorical instead of continuous.
-    colorData <- ifelse(sovi$'Food desert' == 1, "yes", "no") ## double check whether 1 means food desert/edit viz to make it more clear
+    colorData <- ifelse(sovi$'Region of low food access' == 1, "yes", "no") ## double check whether 1 means Region of low food access/edit viz to make it more clear
     pal <- colorFactor("viridis", colorData) 
   }
   
      else if (colorBy == "Vulnerability") {
-      # Color and palette are treated specially in the "food access" case, because the values are categorical instead of continuous.
+      # Color and palette are treated specially in this case, because the values are categorical instead of continuous.
       colorData <- ifelse(sovi$Vulnerability == 1, "1: Moderate", ifelse(sovi$Vulnerability == 2, "2: High", "3: Highest"))  
      pal <- colorFactor("viridis", colorData)
+  }
+  
+  else if (colorBy == "Select Indicator") {
+    # remove indicator data from map 
+    colorData <- ifelse(sovi$Vulnerability == 1, " ", ifelse(sovi$Vulnerability == 2, " ", " "))  
+    pal <- colorFactor("transparent", colorData)
   } 
+  
   
   else { 
     colorData <- sovi@data[[colorBy]]
-    pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
+    pal <- colorBin("viridis", colorData, 10, pretty = FALSE) # 7 = number of bins for each continuous indicator
   }
 
+  
 # add indicator data and legend    
   leafletProxy("map", data = sovi) %>%
     clearShapes() %>% # removes appearance of previously selected indicator polygons
@@ -162,7 +403,7 @@ observe({
                 stroke=TRUE, 
                 fillOpacity = 0.6, 
                 color="black", # polygon border color
-                weight=0.5, # polygon border weight
+                weight=0.8, # polygon border weight
                 popup = popup_text,
                 group = "Indicator Data") %>% 
     addLegend("bottomright", 
@@ -180,12 +421,23 @@ observe({
     addMarkers(data = points(), group="Location Pin") %>% 
   
   # add feature shapefiles
+    ## Delta boundary
     addPolygons(data=delta_sm, 
                 fill=F, 
                 stroke=T, 
                 color="black", # polygon border color
-                weight=2.5, # polygon border weight
+                weight=3, # polygon border weight
                 group = "Delta + Suisun Marsh Boundary") %>% 
+    ## County boundaries 
+    addPolygons(data=delta_counties, 
+                fillColor = "transparent", 
+                stroke=T, 
+                color="yellow", # polygon border color
+                weight=3, # polygon border weight
+                label=paste(delta_counties@data$NAME_UCASE),
+                group = "County Boundaries") %>% 
+  
+    ## Watersheds 
     addPolygons(data=watersheds, 
                 fillColor = "transparent", 
                 stroke=T, 
@@ -193,17 +445,27 @@ observe({
                 weight=3, # polygon border weight
                 label=paste(watersheds@data$Name),
                 group = "Watersheds") %>% 
+    ## Vegetation
+#    addPolygons(data=delta_veg, 
+#                fillColor = v_pal, 
+#                stroke=T, 
+#                color="black", # polygon border color
+#                weight=3, # polygon border weight
+#                label=paste(delta_veg@data$`Vegetation Type`),
+#                group = "Vegetation Cover") %>% 
     
   # add layer control panel 
     addLayersControl(
       #    baseGroups = c("Basemap"),
-      overlayGroups = c('Indicator Data',"Delta + Suisun Marsh Boundary", "Location Pin", "Watersheds"),
+      overlayGroups = c("Indicator Data","Delta + Suisun Marsh Boundary", "Location Pin", "Watersheds", "County Boundaries"), #, "Vegetation Cover"),
       options = layersControlOptions(collapsed = FALSE)
     ) %>% 
-      hideGroup("Watersheds")
+    hideGroup("Watersheds") %>% 
+    hideGroup("County Boundaries")
+ #     hideGroup("Vegetation Cover")
     
-})
 
+})
 
 
 
@@ -213,6 +475,7 @@ observe({
 SVI_clean <- sovi@data %>%
   dplyr::select(
     "Census Block Group ID",
+    "Zip Code" = ZCTA5CE10,
     "City" = NAME,
     "County" = County,
     "Estimated Population" = est_pop,
@@ -220,25 +483,25 @@ SVI_clean <- sovi@data %>%
     "Median household income as % of state household income" = PCT_MHHI,
     "Total Score" = TOTAL_SCOR,
     "Vulnerability Rating" = VULNBLTY,
-    "% popn. <5" = "% pop <5",
+    "% popn. <5" = "% popn. under age 5",
     "Under 5 popn. >70th percentile?",
-    "% of households with one or more nonwhite person" = "% nonwhite households",
+    "% of households with one or more nonwhite person" = "% of households with >0 non-white people",
     "Nonwhite households >70th percentile?",
-    "% of single-person households >64" = '% single households >64',
+    "% of single-person households >64" = '% single-person households > age 64',
     "Solo >64 popn. >70th percentile?",
-    "% of adults >25 without HS diploma or GED" = '% without GED/diploma',
+    "% of adults >25 without HS diploma or GED" = '% of adults 25+ without GED/diploma',
     "Adults without GED >70th percentile?",
-    "% of households that include someone with a disability" = "% disabled households", 
+    "% of households that include someone with a disability" = "% of households that include someone with a disability", 
     "Disabled households >70th percentile?",
-    "% of tenant-occupied housing units" = "% rentals",
+    "% of tenant-occupied housing units" = "% of rented housing units",
     "Renters >70th percentile?",
-    "% of households with no vehicle access" = "% no-car households",
+    "% of households with no vehicle access" = "% of households with no vehicle access",
     "Lack of vehicle access >70th percentile?",
-    "% of households with limited English proficiency" = "% limited English households",
+    "% of households with limited English proficiency" = "% of households with limited English proficiency",
     "Limited English proficiency >70th percentile?",
-    "% of households with income <200% of the federal poverty line" = "% of households in poverty",
+    "% of households with income <200% of the federal poverty line" = "% of households with income <200% of the federal poverty line",
     "Poverty >70th percentile?",
-    "% of babies born at low birth weight" = "% low birth weight",
+    "% of babies born at low birth weight" = "% of babies born at low birth weight",
     "Low birth weights >70th percentile?",
     "Age-adjusted rate of asthma ER visits per 10,000" = "Asthma ER visits per 10k",
     "Asthma ER visits >70th percentile?",
@@ -246,10 +509,16 @@ SVI_clean <- sovi@data %>%
     "Heart attack ER visits >70th percentile?",
     "% of households without health insurance" = "% uninsured households",
     "Uninsured households >70th percentile?",
-    "Low food access (y/n)" = "Food desert")
+    "Low food access (y/n)" = "Region of low food access")
 
 output$table <- DT::renderDataTable(DT::datatable(SVI_clean, options = list(paging=FALSE)))
 
+
+## Indicator data for methodology/resources section #########################
+
+indicators <- read_csv("data/indicator_metadata.csv")
+
+output$indicators <- renderTable(indicators)
 
 }
 

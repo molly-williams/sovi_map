@@ -1,0 +1,15 @@
+﻿Indicator,Metric,Data Source,Scale
+Children,% population under 5,"2017 ACS, Table B01001",Census block group
+Disability,% households with 1 or more persons with a disability,"2017 ACS, Table B22010",Census block group
+Educational attainment,% adults over 25 without a high school diploma or GED,"2017 ACS, Table B15003",Census block group
+Linguistic isolation,% households that are limited English speaking households,"2017 ACS, Table C16002",Census block group
+Older adults living alone,"% households that have 1 member, age 65 years and over","2017 ACS, Table B11007",Census block group
+Poverty,% of households with income less than 200% of the federal poverty level,"2017 ACS, Table C17002",Census block group
+Race and ethnicity,% households with 1 or more persons that are Hispanic and/or non-white,"2017 ACS, Table B03002",Census block group
+Renters,% of housing units that are renter-occupied,"2017 ACS, Table B25003",Census block group
+Vehicle access,% households without a vehicle,"2017 ACS, Table B25044",Census block group
+Health insurance,% of individuals with health insurance coverage,"2017 ACS, Table B27001",Census tract
+Asthma,"Age-adjusted rate of emergency department visits for asthma per 10,000",CalEnviroScreen 3.0,Census tract
+Cardiovascular disease,"Age-adjusted rate of emergency department visits for heart attack per 10,000",CalEnviroScreen 3.0,Census tract
+Low birth weight,Percent low birth weight,CalEnviroScreen 3.0,Census tract
+Food insecurity,At least 100 households are more than ½ mile from the nearest supermarket and have no access to a vehicle; or at least 500 people or 33 percent of the population live more than 20 miles from the nearest supermarket,US Department of Agriculture (USDA) Food Access Research Atlas,Census tract
