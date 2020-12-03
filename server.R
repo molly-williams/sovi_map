@@ -129,11 +129,12 @@ points <- eventReactive(input$recalc, {
 output$map <- renderLeaflet({
     leaflet() %>% 
     addTiles(
-        urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+        urlTemplate = "https://api.mapbox.com/styles/v1/moowill/cki3zbj5o4k4b19qlq98amqia/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibW9vd2lsbCIsImEiOiJja2kzejloOHkxdzNtMnhxcTAwY3Zqa25zIn0.VCsBGYnJr6Z7A7XnD157cg",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )  %>% 
     setView(lat=38.1, lng=-121.8, zoom=10) %>% 
-    addMarkers(data = points(), group="Location Pin") 
+    addMarkers(data = points(), group="Location Pin")
+    
 })
 
 

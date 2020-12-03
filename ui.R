@@ -4,6 +4,9 @@
 library(shiny)
 library(leaflet)
 
+
+
+
 # Choices for drop-down
 vars <- c(
     "Select Indicator",
@@ -26,12 +29,15 @@ vars <- c(
 
 
 
+
 inline=function(x) {
     tags$div(style="display:inline-block;", x)
 }
 
+
 navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
            
+
            tabPanel("Interactive map",
                     div(class="outer",
                         
@@ -74,7 +80,13 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
                                       inline(numericInput("long", label = h5("Longitude:"), value = -121.50001)),
                                       inline(numericInput("lat", label = h5("Latitude:"), value = 38.00001)),
                                       
-                                      actionButton("recalc", "Show point", width="40%")
+                                      actionButton("recalc", "Show point", width="40%"),
+                                      
+                                      tags$br(),
+                                      tags$br(),
+                                      
+                                        a(shiny::icon("reply"), "Delta Science shinyapps homepage", 
+                                          href="https://deltascience.shinyapps.io/Home/")
                                       
                                       
                                     )
@@ -193,6 +205,7 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
            
            ),
            
+
            conditionalPanel("false", icon("crosshair"))
 )
 
