@@ -127,9 +127,10 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
                     tags$br(),
                     tags$br(),
                     
-                    "The results of the vulnerability assessment are slated to be published in early 2021."
-                    ),
-                    
+                    "The " tags$a("Vulnerability Assessment", href="https://deltacouncil.ca.gov/pdf/delta-plan/2021-06-25-delta-adapts-vulnerability-assessment.pdf", 
+                    target = "_blank") " was released in 2021."
+
+                
            #         img(src="vulnerability_model.jpg", height="100%", width = "100%"),
                     
                 tags$br(),
@@ -195,9 +196,9 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
            
            h3("Contact"),
            tags$div(
-               "Please contact ",
-               tags$a("Avery Livengood", href="mailto:avery.livengood@deltacouncil.ca.gov"),
-               " at the Delta Stewardship Council with any questions."
+               "Please contact the ",
+               tags$a(" Delta Stewardship Council", href="mailto:climatechange@deltacouncil.ca.gov"),
+               "  with any questions."
            ),
            
            tags$br(),
