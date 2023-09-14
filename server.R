@@ -1,3 +1,4 @@
+library(rsconnect)
 library(shiny)
 library(leaflet)
 library(RColorBrewer)
