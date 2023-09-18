@@ -127,8 +127,9 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
                     tags$br(),
                     tags$br(),
                     
-                    "The " tags$a("Vulnerability Assessment", href="https://deltacouncil.ca.gov/pdf/delta-plan/2021-06-25-delta-adapts-vulnerability-assessment.pdf", 
-                    target = "_blank") " was released in 2021."
+                    "The ",
+                    tags$a("Vulnerability Assessment", href="https://deltacouncil.ca.gov/pdf/delta-plan/2021-06-25-delta-adapts-vulnerability-assessment.pdf", target = "_blank"), 
+                    " was released in 2021.",
 
                 
            #         img(src="vulnerability_model.jpg", height="100%", width = "100%"),
