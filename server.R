@@ -1,11 +1,23 @@
-library(shiny)
-library(leaflet)
+# load required packages
+if(!require(shiny)) install.packages("shiny", repos = "http://cran.us.r-project.org")
+if(!require(leaflet)) install.packages("leaflet", repos = "http://cran.us.r-project.org")
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
+if(!require(scales)) install.packages("scales", repos = "http://cran.us.r-project.org")
+if(!require(lattice)) install.packages("lattice", repos = "http://cran.us.r-project.org")
+if(!require(rgdal)) install.packages("rgdal", repos = "http://cran.us.r-project.org")
+if(!require(DT)) install.packages("DT", repos = "http://cran.us.r-project.org")
+if(!require(rgeos)) install.packages("rgeos", repos = "http://cran.us.r-project.org")
+
+
+library(shiny)#
+library(leaflet)#
 library(RColorBrewer)
 library(scales)
 library(lattice)
 library(rgdal)
 library(DT)
-library(tidyverse)
+library(tidyverse)#
 library(rgeos)
 
 # Data import and wrangling
