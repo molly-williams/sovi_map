@@ -96,7 +96,7 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
                         tags$div(id="cite",
                                  tags$em('This map was created in support of the Delta Adapts initiative, a project of the Delta Stewardship Council (2020)')
                         )
-                    ),
+                    ), # EO tabPanel Interactive map
            
            tabPanel("Data explorer",
                     DT::dataTableOutput("table")
@@ -127,8 +127,8 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
                     tags$br(),
                     tags$br(),
                     
-                    "The " tags$a("Vulnerability Assessment", href="https://deltacouncil.ca.gov/pdf/delta-plan/2021-06-25-delta-adapts-vulnerability-assessment.pdf", 
-                    target = "_blank") " was released in 2021."
+                    "The ",tags$a("Vulnerability Assessment", href="https://deltacouncil.ca.gov/pdf/delta-plan/2021-06-25-delta-adapts-vulnerability-assessment.pdf", 
+                    target = "_blank")," was released in 2021.",
 
                 
            #         img(src="vulnerability_model.jpg", height="100%", width = "100%"),
@@ -208,6 +208,7 @@ navbarPage("Vulnerability to Climate Change in the Delta", id="nav",
            
 
            conditionalPanel("false", icon("crosshair"))
-)
+) # EO tabPanel Methodology and Resources
+) # EO navbarPage
 
 
