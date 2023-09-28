@@ -1,3 +1,19 @@
+
+# load required packages
+if(!require(shiny)) install.packages("shiny", repos = "http://cran.us.r-project.org")
+if(!require(leaflet)) install.packages("leaflet", repos = "http://cran.us.r-project.org")
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
+if(!require(scales)) install.packages("scales", repos = "http://cran.us.r-project.org")
+if(!require(lattice)) install.packages("lattice", repos = "http://cran.us.r-project.org")
+if(!require(rgdal)) install.packages("rgdal", repos = "http://cran.us.r-project.org")
+if(!require(DT)) install.packages("DT", repos = "http://cran.us.r-project.org")
+if(!require(rgeos)) install.packages("rgeos", repos = "http://cran.us.r-project.org")
+if(!require(rsconnect)) install.packages("rgeos", repos = "http://cran.us.r-project.org")
+
+
+
+library(rsconnect)
 library(shiny)
 library(leaflet)
 library(RColorBrewer)
@@ -7,6 +23,7 @@ library(rgdal)
 library(DT)
 library(tidyverse)
 library(rgeos)
+
 
 # Data import and wrangling
 sovi <- readOGR("data/SOVI_cities_zips.shp")
@@ -357,7 +374,8 @@ observe({
         tags$a("(CA Healthy Places Index)", href="https://healthyplacesindex.org/data-reports/", target="_blank"),
         tags$br(),
         tags$br(),
-        "Data Source: ", tags$a("USDA Food Access Research Atlas", href="https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data.aspx", target="_blank")
+        "Data Source: ", 
+        tags$a("USDA Food Access Research Atlas", href="https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data.aspx", target="_blank")
         )
     })
   }
