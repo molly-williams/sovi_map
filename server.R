@@ -1,3 +1,4 @@
+
 # load required packages
 if(!require(shiny)) install.packages("shiny", repos = "http://cran.us.r-project.org")
 if(!require(leaflet)) install.packages("leaflet", repos = "http://cran.us.r-project.org")
@@ -8,9 +9,12 @@ if(!require(lattice)) install.packages("lattice", repos = "http://cran.us.r-proj
 if(!require(rgdal)) install.packages("rgdal", repos = "http://cran.us.r-project.org")
 if(!require(DT)) install.packages("DT", repos = "http://cran.us.r-project.org")
 if(!require(rgeos)) install.packages("rgeos", repos = "http://cran.us.r-project.org")
+if(!require(rsconnect)) install.packages("rgeos", repos = "http://cran.us.r-project.org")
 
 
 
+library(rsconnect)
+library(shiny)
 library(leaflet)
 library(RColorBrewer)
 library(scales)
@@ -19,7 +23,7 @@ library(rgdal)
 library(DT)
 library(tidyverse)
 library(rgeos)
-library(shiny)
+
 
 # Data import and wrangling
 sovi <- readOGR("data/SOVI_cities_zips.shp")
